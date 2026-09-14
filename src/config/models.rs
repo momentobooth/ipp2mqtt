@@ -9,6 +9,7 @@ use serde::Deserialize;
 #[derive(Debug, Deserialize)]
 pub struct Settings {
     pub discovery: Discovery,
+    pub ipp: Ipp,
     #[serde(default)]
     pub printers: Vec<StaticPrinter>,
 }
@@ -43,4 +44,35 @@ pub struct Discovery {
 pub struct StaticPrinter {
     pub id: String,
     pub uri: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Ipp {
+    /// Printers almost universally ship self-signed certificates, so `ipps`
+    /// verification is off by default.
+    #[serde(alias = "ignoretlserrors")]
+    pub ignore_tls_errors: bool,
+
+    /// Sent as `requesting-user-name` on every operation.
+    #[serde(alias = "username")]
+    pub user_name: String,
+
+    #[serde(alias = "connecttimeout", deserialize_with = "super::duration::deserialize")]
+    pub connect_timeout: Duration,
+
+    #[serde(alias = "polltimeout", deserialize_with = "super::duration::deserialize")]
+    pub poll_timeout: Duration,
+
+    /// Longer than the poll timeout: a printer may hold the connection while it
+    /// renders a document.
+    #[serde(alias = "jobtimeout", deserialize_with = "super::duration::deserialize")]
+    pub job_timeout: Duration,
+
+    /// How often printer status is polled.
+    #[serde(alias = "pollinterval", deserialize_with = "super::duration::deserialize")]
+    pub poll_interval: Duration,
+
+    /// How often supplies and loaded media are refreshed.
+    #[serde(alias = "supplyinterval", deserialize_with = "super::duration::deserialize")]
+    pub supply_interval: Duration,
 }

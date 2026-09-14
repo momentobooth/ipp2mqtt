@@ -25,7 +25,13 @@ No printer specific hacks; only what the IPP and PWG specifications define.
   - [X] Deduplicates one printer across service types, subtypes, interfaces and address families
   - [X] Online / stale / offline lifecycle with mDNS reconfirmation
   - [X] Statically configured printers alongside discovered ones
-- [ ] IPP client
+- [X] IPP client
+  - [X] Capability probe, cached until the printer reports a configuration change
+  - [X] Status polling: state, state reasons with severity, accepting/queued
+  - [X] Supply levels from `printer-supply`, including receptacles
+  - [X] Job listing and per-job status
+  - [X] Print-Job, Create-Job + Send-Document, Validate-Job, Cancel-Job, Identify-Printer
+  - [X] Retryable vs permanent error classification
 - [ ] MQTT client
 - [ ] MQTT messaging and Home Assistant discovery
 - [ ] Print queue
@@ -44,6 +50,13 @@ Because the environment separator is `_`, keys that contain an underscore are wr
 | `discovery.ippeverywhereonly` | `I2M_DISCOVERY_IPPEVERYWHEREONLY` |
 | `discovery.staleafter` | `I2M_DISCOVERY_STALEAFTER` |
 | `discovery.offlineafter` | `I2M_DISCOVERY_OFFLINEAFTER` |
+| `ipp.ignoretlserrors` | `I2M_IPP_IGNORETLSERRORS` |
+| `ipp.username` | `I2M_IPP_USERNAME` |
+| `ipp.pollinterval` | `I2M_IPP_POLLINTERVAL` |
+| `ipp.supplyinterval` | `I2M_IPP_SUPPLYINTERVAL` |
+| `ipp.connecttimeout` | `I2M_IPP_CONNECTTIMEOUT` |
+| `ipp.polltimeout` | `I2M_IPP_POLLTIMEOUT` |
+| `ipp.jobtimeout` | `I2M_IPP_JOBTIMEOUT` |
 
 Log level comes from `RUST_LOG`, for example `RUST_LOG=ipp2mqtt=debug`.
 
@@ -53,9 +66,31 @@ Log level comes from `RUST_LOG`, for example `RUST_LOG=ipp2mqtt=debug`.
 # Browse for printers and report what is found, until interrupted.
 ipp2mqtt discover
 
+# Probe printers over IPP and print capabilities, status, supplies and jobs.
+ipp2mqtt status
+ipp2mqtt status selphy --all-jobs
+
+# Print. Several files use Create-Job and Send-Document instead of Print-Job.
+ipp2mqtt print photo.pdf --printer selphy --format application/pdf
+ipp2mqtt print a.pdf b.pdf --printer selphy
+
+# Make a printer announce itself, and cancel a job.
+ipp2mqtt identify selphy
+ipp2mqtt cancel 42 selphy
+
 # Run the service.
 ipp2mqtt
 ```
+
+## IPP notes
+
+**The `ipp` crate is used as a codec, not as a client.** Its `AsyncIppClient` builds a fresh HTTP client on every request, so every poll would cost a new TCP and TLS handshake. ipp2mqtt keeps one pooled connection per printer instead, which measurably holds: five polls of a printer use one TCP connection. It also lets the client set its own connect timeout, speak IPP/2.0, and filter Get-Jobs, none of which the crate's client allows.
+
+**TLS verification is off by default.** Printers ship self-signed certificates and discovery prefers `ipps` where a printer advertises it, so verifying by default would make secure printing unusable out of the box. Set `ipp.ignoretlserrors = false` to require valid certificates.
+
+**Capabilities are fetched once**, then refreshed only when the printer's `printer-config-change-time` moves. The status poll asks for a short list of attributes rather than `all`, which on a real printer is tens of kilobytes per request.
+
+**Three readiness signals are published, not one.** `printer-is-accepting-jobs` governs future jobs and is explicitly independent of `printer-state`, so a stopped printer commonly still queues work. `can_submit`, `will_print_now` and `needs_attention` keep that distinction.
 
 ## Discovery notes
 

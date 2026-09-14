@@ -23,6 +23,28 @@ ippeverywhereonly = false
 staleafter = "2m"
 offlineafter = "5m"
 
+[ipp]
+# Printers almost universally ship self-signed certificates, so `ipps`
+# certificate verification is off by default.
+ignoretlserrors = true
+
+# Sent as `requesting-user-name` on every operation.
+username = "ipp2mqtt"
+
+connecttimeout = "3s"
+polltimeout = "8s"
+
+# Longer than the poll timeout: a printer may hold the connection open while it
+# renders a document.
+jobtimeout = "5m"
+
+# How often printer status is polled. Lower values keep a printer from sleeping;
+# 2s to 60s is sensible.
+pollinterval = "5s"
+
+# How often supplies and loaded media are refreshed.
+supplyinterval = "60s"
+
 # Printers that cannot be discovered, for example on another subnet.
 # [[printers]]
 # id = "selphy"

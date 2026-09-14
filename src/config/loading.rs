@@ -22,6 +22,13 @@ pub fn load_config() -> Result<Settings, ConfigError> {
         .set_default("discovery.ippeverywhereonly", false).context(BuildSnafu)?
         .set_default("discovery.staleafter", "2m").context(BuildSnafu)?
         .set_default("discovery.offlineafter", "5m").context(BuildSnafu)?
+        .set_default("ipp.ignoretlserrors", true).context(BuildSnafu)?
+        .set_default("ipp.username", "ipp2mqtt").context(BuildSnafu)?
+        .set_default("ipp.connecttimeout", "3s").context(BuildSnafu)?
+        .set_default("ipp.polltimeout", "8s").context(BuildSnafu)?
+        .set_default("ipp.jobtimeout", "5m").context(BuildSnafu)?
+        .set_default("ipp.pollinterval", "5s").context(BuildSnafu)?
+        .set_default("ipp.supplyinterval", "60s").context(BuildSnafu)?
         .build().context(BuildSnafu)?
         .try_deserialize().context(DeserializeSnafu)
 }
