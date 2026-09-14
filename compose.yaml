@@ -1,0 +1,19 @@
+services:
+  ipp2mqtt:
+    build:
+      context: .
+      target: final
+
+    # mDNS is multicast with an IP TTL of 1, which does not survive Docker's
+    # bridge network. Host networking is required on Linux; Docker Desktop on
+    # macOS and Windows cannot reach the LAN multicast domain at all.
+    network_mode: host
+
+    environment:
+      I2M_DISCOVERY_ENABLED: true
+      I2M_DISCOVERY_IGNOREINTERFACES: "" # Comma separated, for example: tailscale0,utun3
+      I2M_DISCOVERY_IPPEVERYWHEREONLY: false
+      I2M_DISCOVERY_STALEAFTER: 2m
+      I2M_DISCOVERY_OFFLINEAFTER: 5m
+
+      RUST_LOG: info # Set to `debug` to see every log message. For production `info` is advised.

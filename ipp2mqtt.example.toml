@@ -1,0 +1,29 @@
+# ipp2mqtt configuration.
+#
+# Copy to `ipp2mqtt.toml`. Every value can also be set through an environment
+# variable prefixed with `I2M_`, which wins over the file, for example:
+#   I2M_DISCOVERY_ENABLED=false
+#   I2M_DISCOVERY_IGNOREINTERFACES=tailscale0,utun3
+
+[discovery]
+# Browse for printers over mDNS.
+enabled = true
+
+# Interface names to browse on. Leave empty for every interface.
+interfaces = []
+
+# Interface names to never browse on. VPN interfaces carry no printers.
+ignoreinterfaces = []
+
+# Only accept printers advertising the `_print._sub` IPP Everywhere subtype.
+ippeverywhereonly = false
+
+# Time without an mDNS refresh before a printer is reported stale, then offline.
+# The SRV record TTL is 120s and printers power-save, so keep these generous.
+staleafter = "2m"
+offlineafter = "5m"
+
+# Printers that cannot be discovered, for example on another subnet.
+# [[printers]]
+# id = "selphy"
+# uri = "ipp://192.168.1.50:631/ipp/print"
