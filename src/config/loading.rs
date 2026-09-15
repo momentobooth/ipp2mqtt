@@ -29,6 +29,18 @@ pub fn load_config() -> Result<Settings, ConfigError> {
         .set_default("ipp.jobtimeout", "5m").context(BuildSnafu)?
         .set_default("ipp.pollinterval", "5s").context(BuildSnafu)?
         .set_default("ipp.supplyinterval", "60s").context(BuildSnafu)?
+        .set_default("mqtt.host", "localhost").context(BuildSnafu)?
+        .set_default("mqtt.port", 1883).context(BuildSnafu)?
+        .set_default("mqtt.secure", false).context(BuildSnafu)?
+        .set_default("mqtt.ignoretlserrors", false).context(BuildSnafu)?
+        .set_default("mqtt.username", "").context(BuildSnafu)?
+        .set_default("mqtt.password", "").context(BuildSnafu)?
+        .set_default("mqtt.clientid", "ipp2mqtt").context(BuildSnafu)?
+        .set_default("mqtt.roottopic", "ipp2mqtt").context(BuildSnafu)?
+        .set_default("mqtt.qos", 1).context(BuildSnafu)?
+        .set_default("mqtt.keepalive", "30s").context(BuildSnafu)?
+        .set_default("mqtt.cleansession", true).context(BuildSnafu)?
+        .set_default("mqtt.maxpacketsize", 262144).context(BuildSnafu)?
         .build().context(BuildSnafu)?
         .try_deserialize().context(DeserializeSnafu)
 }

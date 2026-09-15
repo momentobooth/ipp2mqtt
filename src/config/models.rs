@@ -2,6 +2,8 @@ use std::time::Duration;
 
 use serde::Deserialize;
 
+use crate::config::secret::Secret;
+
 // When changing anything here, make sure to add
 // #[serde(alias = "ihavenounderscores")]
 // where needed, so it can be read from the ENV vars.
@@ -10,6 +12,7 @@ use serde::Deserialize;
 pub struct Settings {
     pub discovery: Discovery,
     pub ipp: Ipp,
+    pub mqtt: Mqtt,
     #[serde(default)]
     pub printers: Vec<StaticPrinter>,
 }
@@ -75,4 +78,44 @@ pub struct Ipp {
     /// How often supplies and loaded media are refreshed.
     #[serde(alias = "supplyinterval", deserialize_with = "super::duration::deserialize")]
     pub supply_interval: Duration,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Mqtt {
+    pub host: String,
+    pub port: u16,
+    pub secure: bool,
+
+    /// Accept any broker certificate. Needed for a broker with a self-signed
+    /// certificate and no CA file to point at.
+    #[serde(alias = "ignoretlserrors")]
+    pub ignore_tls_errors: bool,
+
+    /// PEM file holding the CA that signed the broker certificate.
+    #[serde(alias = "cacertificate")]
+    pub ca_certificate: Option<String>,
+
+    pub username: String,
+    pub password: Secret,
+
+    #[serde(alias = "clientid")]
+    pub client_id: String,
+
+    #[serde(alias = "roottopic")]
+    pub root_topic: String,
+
+    /// 0, 1 or 2.
+    pub qos: u8,
+
+    #[serde(alias = "keepalive", deserialize_with = "super::duration::deserialize")]
+    pub keep_alive: Duration,
+
+    /// A clean session makes the broker forget subscriptions on reconnect. The
+    /// client re-applies them itself either way.
+    #[serde(alias = "cleansession")]
+    pub clean_session: bool,
+
+    /// rumqttc defaults this to 10 KiB, which a status payload can exceed.
+    #[serde(alias = "maxpacketsize")]
+    pub max_packet_size: usize,
 }

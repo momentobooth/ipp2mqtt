@@ -3,6 +3,7 @@ mod commands;
 mod config;
 mod discovery;
 mod ipp;
+mod mqtt;
 
 use clap::Parser;
 use log::error;
