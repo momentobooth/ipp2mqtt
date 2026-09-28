@@ -237,9 +237,9 @@ dependencies = [
 
 [[package]]
 name = "config"
-version = "0.15.25"
+version = "0.15.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b85f248a4de22d204ceabc6299d89d2c70fbd7f09fea53c06c852369652d8139"
+checksum = "790374c727a4cb20877dd2cc99ce7011cbe03b0b8df083acccd37df0d161304d"
 dependencies = [
  "pathdiff",
  "serde_core",
@@ -998,9 +998,9 @@ checksum = "4050469837a6ff301cd14c1f8f24f88549e6d548f24f64e2148eb0f72cebc51f"
 
 [[package]]
 name = "mdns-sd"
-version = "0.21.3"
+version = "0.21.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a63c9b854b5ad0812ac5969f8db92a59f28b45d0a5ae599b9a45b84c5c8a08e8"
+checksum = "1067efe2aadc6967f84c95977dca910e98f3edfd6403efc8fa8508d289ce012d"
 dependencies = [
  "fastrand",
  "flume 0.12.0",
