@@ -14,7 +14,7 @@ exponential-backoff = "2.1.1"
 futures-util = { version = "0.3.34", default-features = false, features = ["io"] }
 humantime = "2.4.0"
 # Used as an IPP codec only; HTTP is ours so one connection is reused per printer.
-ipp = { version = "7.0.0", default-features = false, features = ["async", "serde", "log"] }
+ipp = { version = "8.0.0", default-features = false, features = ["async", "serde", "log"] }
 log = "0.4.34"
 mdns-sd = "0.21.3"
 reqwest = { version = "0.13.5", default-features = false, features = ["rustls", "http2"] }
